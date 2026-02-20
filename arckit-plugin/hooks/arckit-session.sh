@@ -42,6 +42,30 @@ else
   CONTEXT="${CONTEXT}${NL}${NL}No projects/ directory found. Run /arckit:init to scaffold a new project or /arckit:create to add one."
 fi
 
+# Read session state for continuity
+STATE_FILE="${CWD}/.arckit/session-state.md"
+if [[ -f "$STATE_FILE" ]]; then
+  # Extract last 2 session entries (most recent first)
+  # Each session starts with "### Session:"
+  LAST_SESSIONS=$(awk '/^### Session:/{count++} count<=2' RS='---' "$STATE_FILE" | tail -n +2 | head -40)
+
+  if [[ -n "$LAST_SESSIONS" ]]; then
+    CONTEXT="${CONTEXT}${NL}${NL}## Previous Sessions${NL}${LAST_SESSIONS}"
+  fi
+
+  # Extract Current Focus and Pending Decisions (manual sections)
+  FOCUS=$(awk '/^## Current Focus/{found=1; next} /^## /{found=0} found && !/^<!--/' "$STATE_FILE" | head -5)
+  DECISIONS=$(awk '/^## Pending Decisions/{found=1; next} /^## /{found=0} found && !/^<!--/' "$STATE_FILE" | head -5)
+
+  if [[ -n "$FOCUS" ]] && [[ ! "$FOCUS" =~ ^[[:space:]]*$ ]]; then
+    CONTEXT="${CONTEXT}${NL}${NL}## Current Focus${NL}${FOCUS}"
+  fi
+
+  if [[ -n "$DECISIONS" ]] && [[ ! "$DECISIONS" =~ ^[[:space:]]*$ ]]; then
+    CONTEXT="${CONTEXT}${NL}${NL}## Pending Decisions${NL}${DECISIONS}"
+  fi
+fi
+
 # Output additionalContext
 jq -n --arg ctx "$CONTEXT" '{
   hookSpecificOutput: {

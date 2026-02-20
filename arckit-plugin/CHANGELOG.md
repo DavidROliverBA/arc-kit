@@ -5,6 +5,16 @@ All notable changes to the ArcKit Claude Code plugin will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Session continuity** — new `session-end.sh` Stop hook records session activity (commits, artifacts modified) to `.arckit/session-state.md`; enhanced `arckit-session.sh` reads previous session context on start
+- **Session state template** — `session-state-template.md` for scaffolding session state files
+- Documentation: `docs/guides/session-continuity.md` — session continuity guide
+
+---
+
 ## [2.7.1] - 2026-02-20
 
 ### Added
